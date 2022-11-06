@@ -6,6 +6,7 @@ const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
 
 
+const CSVToJSON = require('csvtojson')
 
 
 const PORT = process.env.PORT || 3000;
@@ -15,7 +16,8 @@ let currentDate;
 
 
 const app = express();
-app.get('/news', (req, res) => {
+app.get('/news', async (req, res) => {
+    var json;
     setInterval(() => {
 
         axios('https://news.ycombinator.com/newest')
@@ -55,7 +57,7 @@ app.get('/news', (req, res) => {
 
 
 
-            const json = JSON.stringify(articles);   
+            json = JSON.stringify(articles);   
 
             const csvWriter = createCsvWriter({
                 path: `./${currentDate}.csv`,
@@ -68,11 +70,24 @@ app.get('/news', (req, res) => {
             }
 
             main();
+            // json = JSON.stringify(articles);   
            
-    }, 2000)
+        }, 2000)
+
  })
 
+ app.get("/news/date", (req, res) => {
 
+    CSVToJSON()
+    .fromFile('2022-11-06.csv')
+    .then(users => {
+        console.log(users)
+        res.send(users)
+    })
+    .catch(err => {
+        console.log(err)
+    })
+ })
 
 
 app.listen(PORT, () => {
